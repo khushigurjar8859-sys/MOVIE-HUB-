@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090b12">
+<title>MOVIEHUB - Watch Movies</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090b12;color:white;font-family:Arial,sans-serif}
+header{padding:20px;display:flex;justify-content:space-between;align-items:center;background:#10131d;position:sticky;top:0;z-index:5}
+.logo{font-size:25px;font-weight:900;color:#ff3155}
+.logo span{color:white}
+.menu{color:#aaa;font-size:13px}
+.hero{padding:55px 22px 45px;background:linear-gradient(90deg,#090b12 5%,#17182b 65%,#302039);min-height:260px}
+.hero small{color:#ff4967;letter-spacing:3px}
+.hero h1{font-size:38px;margin:15px 0}
+.hero p{color:#bbb;line-height:1.5}
+button{border:0;border-radius:8px;padding:12px 18px;background:#ff3155;color:white;font-weight:bold;cursor:pointer}
+.search{padding:20px}
+input{width:100%;padding:15px;background:#191e2b;color:white;border:1px solid #303748;border-radius:10px;font-size:16px}
+.categories{display:flex;gap:10px;overflow-x:auto;padding:0 20px 20px}
+.categories button{white-space:nowrap;background:#202635;color:#ddd}
+.categories button.active{background:#ff3155;color:white}
+h2{font-size:21px;padding:0 20px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:15px}
+.card{background:#171c29;border-radius:12px;overflow:hidden}
+.poster{height:145px;display:flex;align-items:center;justify-content:center;font-size:43px;background:linear-gradient(135deg,#292b46,#63314d)}
+.info{padding:12px}
+.info h3{font-size:15px;margin:0 0 7px}
+.info p{font-size:12px;color:#aaa;margin:0 0 12px}
+.info button{width:100%;padding:10px;font-size:12px}
+footer{text-align:center;color:#777;padding:30px;font-size:12px}
+.empty{text-align:center;color:#aaa;padding:30px;display:none}
+</style>
+</head>
+<body>
+<header>
+ <div class="logo">MOVIE<span>HUB</span></div>
+ <div class="menu">HOME　 MOVIES　 MY LIST</div>
+</header>
+
+<section class="hero">
+ <small>YOUR ENTERTAINMENT WORLD</small>
+ <h1>Unlimited<br>Entertainment.</h1>
+ <p>Discover movies, classics and independent cinema.</p>
+ <button onclick="document.getElementById('movies').scrollIntoView()">Explore Movies</button>
+</section>
+
+<div class="search">
+ <input id="search" type="search" placeholder="🔍 Search movies..." oninput="render()">
+</div>
+
+<div class="categories">
+ <button class="active" onclick="filter('All',this)">All</button>
+ <button onclick="filter('Classics',this)">Classics</button>
+ <button onclick="filter('Action',this)">Action</button>
+ <button onclick="filter('Drama',this)">Drama</button>
+ <button onclick="filter('Uploads',this)">My Uploads</button>
+</div>
+
+<h2 id="movies">🎬 Explore Movies</h2>
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty">No movies found.</div>
+
+<h2>❤️ My Watchlist</h2>
+<div class="grid" id="saved"></div>
+
+<footer>
+ MOVIEHUB © 2026<br><br>
+ Only authorized and legally available video sources.
+</footer>
+
+<script>
+const movies=[
+ {id:1,title:"Public Domain Cinema",type:"Classics",emoji:"🎞️",desc:"Explore classic films"},
+ {id:2,title:"Action Collection",type:"Action",emoji:"💥",desc:"Action movie discovery"},
+ {id:3,title:"Classic Drama",type:"Drama",emoji:"🎭",desc:"Timeless cinema"},
+ {id:4,title:"Independent Films",type:"Classics",emoji:"🎬",desc:"Discover independent films"},
+ {id:5,title:"My Video Library",type:"Uploads",emoji:"📽️",desc:"Your own video collection"},
+ {id:6,title:"Vintage Movies",type:"Classics",emoji:"🍿",desc:"Old cinema discoveries"}
+];
+let category="All";
+let saved=JSON.parse(localStorage.getItem("moviehub-list")||"[]");
+
+function render(){
+ const query=document.getElementById("search").value.toLowerCase();
+ const filtered=movies.filter(m=>(category==="All"||m.type===category)&&m.title.toLowerCase().includes(query));
+ document.getElementById("grid").innerHTML=filtered.map(card).join("");
+ document.getElementById("empty").style.display=filtered.length?"none":"block";
+ document.getElementById("saved").innerHTML=movies.filter(m=>saved.includes(m.id)).map(card).join("");
+}
+function card(m){
+ return `<div class="card">
+ <div class="poster">${m.emoji}</div>
+ <div class="info">
+ <h3>${m.title}</h3>
+ <p>${m.desc}</p>
+ <button onclick="openMovie('${m.title}')">Discover</button>
+ <button style="margin-top:7px;background:#30394b" onclick="toggleSave(${m.id})">
+ ${saved.includes(m.id)?"♥ Saved":"♡ Watchlist"}
+ </button>
+ </div></div>`;
+}
+function filter(type,btn){
+ category=type;
+ document.querySelectorAll(".categories button").forEach(b=>b.classList.remove("active"));
+ btn.classList.add("active");
+ render();
+}
+function toggleSave(id){
+ saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];
+ localStorage.setItem("moviehub-list",JSON.stringify(saved));
+ render();
+}
+function openMovie(title){
+ window.open("https://www.youtube.com/results?search_query="+encodeURIComponent(title+" public domain full movie"),"_blank");
+}
+render();
+</script>
+</body>
+</html>
