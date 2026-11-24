@@ -1,123 +1,296 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#090b12">
-<title>MOVIEHUB - Watch Movies</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090910">
+<title>MovieHub</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#090b12;color:white;font-family:Arial,sans-serif}
-header{padding:20px;display:flex;justify-content:space-between;align-items:center;background:#10131d;position:sticky;top:0;z-index:5}
-.logo{font-size:25px;font-weight:900;color:#ff3155}
-.logo span{color:white}
-.menu{color:#aaa;font-size:13px}
-.hero{padding:55px 22px 45px;background:linear-gradient(90deg,#090b12 5%,#17182b 65%,#302039);min-height:260px}
-.hero small{color:#ff4967;letter-spacing:3px}
-.hero h1{font-size:38px;margin:15px 0}
-.hero p{color:#bbb;line-height:1.5}
-button{border:0;border-radius:8px;padding:12px 18px;background:#ff3155;color:white;font-weight:bold;cursor:pointer}
-.search{padding:20px}
-input{width:100%;padding:15px;background:#191e2b;color:white;border:1px solid #303748;border-radius:10px;font-size:16px}
-.categories{display:flex;gap:10px;overflow-x:auto;padding:0 20px 20px}
-.categories button{white-space:nowrap;background:#202635;color:#ddd}
-.categories button.active{background:#ff3155;color:white}
-h2{font-size:21px;padding:0 20px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:15px}
-.card{background:#171c29;border-radius:12px;overflow:hidden}
-.poster{height:145px;display:flex;align-items:center;justify-content:center;font-size:43px;background:linear-gradient(135deg,#292b46,#63314d)}
-.info{padding:12px}
-.info h3{font-size:15px;margin:0 0 7px}
-.info p{font-size:12px;color:#aaa;margin:0 0 12px}
-.info button{width:100%;padding:10px;font-size:12px}
-footer{text-align:center;color:#777;padding:30px;font-size:12px}
-.empty{text-align:center;color:#aaa;padding:30px;display:none}
+body{margin:0;background:#090910;color:white;font-family:Arial,sans-serif}
+header{padding:18px 5%;background:#151522;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+.logo{font-size:25px;font-weight:900}.logo span{color:#e50914}
+button{background:#e50914;color:white;border:0;border-radius:7px;padding:12px 17px;font-weight:bold;cursor:pointer}
+input,select{background:#202030;color:white;border:1px solid #444;padding:13px;border-radius:7px;width:100%;margin:5px 0}
+main{max-width:1150px;margin:auto;padding:22px 5%}
+.hero{padding:35px 22px;min-height:240px;border-radius:13px;background:linear-gradient(90deg,#090910,#35121e);display:flex;align-items:end}
+.hero h1{font-size:clamp(35px,7vw,55px);margin:8px 0}
+.search{display:flex;gap:10px;margin:22px 0}
+.search input{flex:1}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:15px}
+.card{background:#191927;border-radius:10px;overflow:hidden;cursor:pointer}
+.poster{width:100%;aspect-ratio:2/3;object-fit:cover;background:#29293b}
+.info{padding:11px}
+.info small{color:#aaa}
+.empty{padding:25px;text-align:center;color:#aaa}
+.overlay{display:none;position:fixed;inset:0;background:#000e;z-index:10;align-items:center;justify-content:center;padding:15px}
+.overlay.show{display:flex}
+.modal{background:#191927;padding:20px;border-radius:12px;width:min(600px,100%);max-height:90vh;overflow:auto}
+.modalhead{display:flex;justify-content:space-between;align-items:center}
+video{width:100%;max-height:65vh;background:black}
+.note{font-size:12px;color:#aaa;line-height:1.5}
+footer{text-align:center;color:#888;padding:25px}
+@media(max-width:600px){main{padding:15px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.search{flex-wrap:wrap}}
 </style>
 </head>
 <body>
+
 <header>
- <div class="logo">MOVIE<span>HUB</span></div>
- <div class="menu">HOME　 MOVIES　 MY LIST</div>
+<div class="logo">MOVIE<span>HUB</span></div>
+<button onclick="openModal('admin')">Admin Login</button>
 </header>
 
+<main>
 <section class="hero">
- <small>YOUR ENTERTAINMENT WORLD</small>
- <h1>Unlimited<br>Entertainment.</h1>
- <p>Discover movies, classics and independent cinema.</p>
- <button onclick="document.getElementById('movies').scrollIntoView()">Explore Movies</button>
+<div>
+<p style="color:#ff5965">YOUR PERSONAL CINEMA</p>
+<h1>Movies. Your Way.</h1>
+<p>अपनी पसंद की फिल्में एक ही जगह देखें।</p>
+<button onclick="document.getElementById('movieHeading').scrollIntoView()">Explore Movies</button>
+</div>
 </section>
 
 <div class="search">
- <input id="search" type="search" placeholder="🔍 Search movies..." oninput="render()">
+<input id="search" placeholder="मूवी खोजें...">
+<select id="filter" style="max-width:150px">
+<option value="all">All Categories</option>
+<option>Action</option>
+<option>Comedy</option>
+<option>Drama</option>
+<option>Romance</option>
+<option>Other</option>
+</select>
 </div>
 
-<div class="categories">
- <button class="active" onclick="filter('All',this)">All</button>
- <button onclick="filter('Classics',this)">Classics</button>
- <button onclick="filter('Action',this)">Action</button>
- <button onclick="filter('Drama',this)">Drama</button>
- <button onclick="filter('Uploads',this)">My Uploads</button>
+<h2 id="movieHeading">My Movies</h2>
+<div id="movies" class="grid">
+<div class="empty">अपनी पहली मूवी अपलोड करें।</div>
+</div>
+</main>
+
+<footer>MovieHub • Personal Movie Library</footer>
+
+<div class="overlay" id="admin">
+<div class="modal">
+<div class="modalhead">
+<h2>Admin Panel</h2>
+<button onclick="closeModal('admin')">✕</button>
 </div>
 
-<h2 id="movies">🎬 Explore Movies</h2>
-<div class="grid" id="grid"></div>
-<div class="empty" id="empty">No movies found.</div>
+<div id="loginArea">
+<p class="note">Admin Login करें।</p>
+<input id="email" type="email" placeholder="Admin Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="loginMsg"></p>
+</div>
 
-<h2>❤️ My Watchlist</h2>
-<div class="grid" id="saved"></div>
+<div id="uploadArea" style="display:none">
+<h3>Upload Movie</h3>
+<input id="title" placeholder="Movie Name">
+<select id="category">
+<option>Action</option>
+<option>Comedy</option>
+<option>Drama</option>
+<option>Romance</option>
+<option>Other</option>
+</select>
+<input id="poster" placeholder="Poster Image URL (optional)">
+<label>Movie Video (MP4)</label>
+<input id="video" type="file" accept="video/mp4,video/webm">
+<p class="note">वीडियो Firebase Storage में सेव होगा। Storage की सीमाएँ लागू होंगी।</p>
+<button onclick="uploadMovie()" id="uploadBtn">Upload Movie</button>
+<button onclick="logout()">Logout</button>
+<p id="uploadMsg"></p>
+</div>
+</div>
+</div>
 
-<footer>
- MOVIEHUB © 2026<br><br>
- Only authorized and legally available video sources.
-</footer>
+<div class="overlay" id="playerModal">
+<div class="modal">
+<div class="modalhead">
+<h2 id="playingTitle">Movie</h2>
+<button onclick="closePlayer()">✕</button>
+</div>
+<video id="player" controls playsinline></video>
+</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
 <script>
-const movies=[
- {id:1,title:"Public Domain Cinema",type:"Classics",emoji:"🎞️",desc:"Explore classic films"},
- {id:2,title:"Action Collection",type:"Action",emoji:"💥",desc:"Action movie discovery"},
- {id:3,title:"Classic Drama",type:"Drama",emoji:"🎭",desc:"Timeless cinema"},
- {id:4,title:"Independent Films",type:"Classics",emoji:"🎬",desc:"Discover independent films"},
- {id:5,title:"My Video Library",type:"Uploads",emoji:"📽️",desc:"Your own video collection"},
- {id:6,title:"Vintage Movies",type:"Classics",emoji:"🍿",desc:"Old cinema discoveries"}
-];
-let category="All";
-let saved=JSON.parse(localStorage.getItem("moviehub-list")||"[]");
+const firebaseConfig = {
+apiKey: "AIzaSyCjgJPw4_yOMLciqlW_SE5qmBRxkXJmwIA",
+authDomain: "movie-hub-f03f6.firebaseapp.com",
+projectId: "movie-hub-f03f6",
+storageBucket: "movie-hub-f03f6.firebasestorage.app",
+messagingSenderId: "632401958282",
+appId: "1:632401958282:web:10537b183b091492d2a473",
+measurementId: "G-1X4MV4SVQM"
+};
 
-function render(){
- const query=document.getElementById("search").value.toLowerCase();
- const filtered=movies.filter(m=>(category==="All"||m.type===category)&&m.title.toLowerCase().includes(query));
- document.getElementById("grid").innerHTML=filtered.map(card).join("");
- document.getElementById("empty").style.display=filtered.length?"none":"block";
- document.getElementById("saved").innerHTML=movies.filter(m=>saved.includes(m.id)).map(card).join("");
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+function openModal(id){
+document.getElementById(id).classList.add("show");
 }
-function card(m){
- return `<div class="card">
- <div class="poster">${m.emoji}</div>
- <div class="info">
- <h3>${m.title}</h3>
- <p>${m.desc}</p>
- <button onclick="openMovie('${m.title}')">Discover</button>
- <button style="margin-top:7px;background:#30394b" onclick="toggleSave(${m.id})">
- ${saved.includes(m.id)?"♥ Saved":"♡ Watchlist"}
- </button>
- </div></div>`;
+function closeModal(id){
+document.getElementById(id).classList.remove("show");
 }
-function filter(type,btn){
- category=type;
- document.querySelectorAll(".categories button").forEach(b=>b.classList.remove("active"));
- btn.classList.add("active");
- render();
+
+function login(){
+auth.signInWithEmailAndPassword(
+document.getElementById("email").value.trim(),
+document.getElementById("password").value
+).then(()=>{
+document.getElementById("loginMsg").textContent="Login successful";
+}).catch(e=>{
+document.getElementById("loginMsg").textContent=e.message;
+});
 }
-function toggleSave(id){
- saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];
- localStorage.setItem("moviehub-list",JSON.stringify(saved));
- render();
+
+auth.onAuthStateChanged(user=>{
+document.getElementById("loginArea").style.display=user?"none":"block";
+document.getElementById("uploadArea").style.display=user?"block":"none";
+});
+
+function logout(){
+auth.signOut();
 }
-function openMovie(title){
- window.open("https://www.youtube.com/results?search_query="+encodeURIComponent(title+" public domain full movie"),"_blank");
+
+function loadMovies(){
+db.collection("movies").orderBy("createdAt","desc")
+.onSnapshot(snapshot=>{
+let movies=document.getElementById("movies");
+movies.innerHTML="";
+
+snapshot.forEach(doc=>{
+let m=doc.data();
+let card=document.createElement("div");
+card.className="card";
+
+let img=document.createElement("img");
+img.className="poster";
+img.src=m.poster||"";
+img.alt=m.title||"Movie";
+
+let info=document.createElement("div");
+info.className="info";
+
+let name=document.createElement("b");
+name.textContent=m.title;
+
+let cat=document.createElement("small");
+cat.textContent=m.category;
+
+info.append(name,document.createElement("br"),cat);
+card.append(img,info);
+
+card.onclick=()=>playMovie(m);
+movies.append(card);
+});
+
+if(snapshot.empty){
+movies.innerHTML='<div class="empty">अभी कोई मूवी नहीं है।</div>';
 }
-render();
+},error=>{
+console.error(error);
+document.getElementById("movies").textContent="Firebase Rules सेट करना बाकी है।";
+});
+}
+
+function playMovie(m){
+document.getElementById("playingTitle").textContent=m.title;
+document.getElementById("player").src=m.videoUrl;
+openModal("playerModal");
+document.getElementById("player").play().catch(()=>{});
+}
+
+function closePlayer(){
+let player=document.getElementById("player");
+player.pause();
+player.removeAttribute("src");
+player.load();
+closeModal("playerModal");
+}
+
+async function uploadMovie(){
+let title=document.getElementById("title").value.trim();
+let file=document.getElementById("video").files[0];
+let msg=document.getElementById("uploadMsg");
+let btn=document.getElementById("uploadBtn");
+
+if(!title||!file){
+msg.textContent="मूवी का नाम और वीडियो चुनें।";
+return;
+}
+
+if(!auth.currentUser){
+msg.textContent="पहले Admin Login करें।";
+return;
+}
+
+btn.disabled=true;
+
+try{
+let ref=storage.ref("movies/"+Date.now()+"_"+file.name);
+let task=ref.put(file);
+
+await new Promise((resolve,reject)=>{
+task.on("state_changed",s=>{
+msg.textContent="Uploading "+
+Math.round(s.bytesTransferred/s.totalBytes*100)+"%";
+},reject,resolve);
+});
+
+let videoUrl=await ref.getDownloadURL();
+
+await db.collection("movies").add({
+title:title,
+category:document.getElementById("category").value,
+poster:document.getElementById("poster").value.trim(),
+videoUrl:videoUrl,
+storagePath:ref.fullPath,
+uploadedBy:auth.currentUser.uid,
+createdAt:firebase.firestore.FieldValue.serverTimestamp()
+});
+
+msg.textContent="Movie uploaded successfully!";
+document.getElementById("title").value="";
+document.getElementById("poster").value="";
+document.getElementById("video").value="";
+
+}catch(error){
+msg.textContent="Error: "+error.message;
+}finally{
+btn.disabled=false;
+}
+}
+
+document.getElementById("search").addEventListener("input",filterMovies);
+document.getElementById("filter").addEventListener("change",filterMovies);
+
+function filterMovies(){
+let q=document.getElementById("search").value.toLowerCase();
+let cat=document.getElementById("filter").value;
+
+document.querySelectorAll(".card").forEach(card=>{
+let title=card.querySelector("b").textContent.toLowerCase();
+let category=card.querySelector("small").textContent;
+card.style.display=title.includes(q)&&
+(cat==="all"||category===cat)?"block":"none";
+});
+}
+
+loadMovies();
 </script>
 </body>
 </html>
